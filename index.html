@@ -1,0 +1,299 @@
+<html>
+<head>
+<title>Kumar Finance</title>
+<link rel="stylesheet" href="css/style.css" type="text/css" >
+<link rel="stylesheet" href="css/bootstrap.css" type="text/css" >
+</head>
+<body>
+<div class="wrapper" ng-app="finApp" ng-controller="finCtrl">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 main">
+                <h2 class="sub-header">Accounts</h2>
+                <div class="table-responsive">
+                    <table class="viewTable table table-striped">
+                        <tr class="fixedTableHeader">
+                            <th>Search</th>
+                            <td><input type="text" class="" placeholder="Name" ng-model="finSearch.name"></td>
+                            <td><input type="text" class="" placeholder="Money" ng-model="finSearch.money"></td>
+                            <td><input type="text" class="" placeholder="Account" ng-model="finSearch.account"></td>
+                            <td><input type="text" class="" placeholder="Type" ng-model="finSearch.type"></td>
+                            <td><input type="text" class="" placeholder="Date" ng-model="finSearch.data"></td>
+                            <td><button ng-click="resetSearch()" class="btn btn-primary">Reset</button></td>
+                            <td><button class="btn btn-primary" data-toggle="modal" data-target="#finAddModal" ng-click="resetInputs()">Add</button></td>
+                            <td> <button class="btn btn-success">Total = {{ totalVal }}</button></td>
+                        </tr>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Name</th>
+                            <th>Money</th>
+                            <th>Account</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                        <tr class="ViewTableItem" ng-repeat="(index, x) in finance | filter:finSearch">
+                            <td>{{ index+1 }}</td>
+                            <td>{{ x.name }}</td>
+                            <td>{{ x.money }}</td>
+                            <td>{{ x.account }}</td>
+                            <td>{{ x.type }}</td>
+                            <td>{{ x.date }}{{ totalValFunc(index, x.money) }}</td>
+                            <td><button data-id="{{ x._id }}" data-toggle="modal" data-target="#finEditModal" ng-click="finEditInvoke(x._id)" class="btn btn-success">Edit</button></td>
+                            <td><button data-id="{{ x._id }}" data-toggle="modal" data-target="#finDeleteModal" ng-click="finDeleteInvoke(x._id)" class="btn btn-danger">Delete</button></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="finAddModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button data-dismiss="modal" class="close">X</button>
+                        <h4 class="modal-title">Add Account</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="addFin" name="addFin">
+                            <div class="form-group">
+                                <label for="finAddName">Name</label>
+                                <input type="text" placeholder="Name" id="finAddName" class="form-control" ng-model="finName">
+                            </div>
+                            <div class="form-group">
+                                <label for="finAddMoney">Money</label>
+                                <input type="text" placeholder="Money" id="finAddMoney" class="form-control" ng-model="finMoney">
+                            </div>
+                            <div class="form-group">
+                                <label>Account</label><br/>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finAddAcc" value="Debit" ng-model="finAcc">Debit
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finAddAcc" value="Credit" ng-model="finAcc">Credit
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>Type</label><br/>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finAddType" value="Daily" ng-model="finType">Daily
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finAddType" value="Weekly" ng-model="finType">Weekly
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finAddType" value="Monthly" ng-model="finType">Monthly
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="finAddDate">Date</label>
+                                <input type="type" placeholder="Date" id="finAddDate" class="form-control" ng-model="finDate">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" ng-click="financeAdd()" class="btn btn-success" value="Done" id="submit">
+                        <button data-dismiss="modal" class="btn btn-danger closeModel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="finEditModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button data-dismiss="modal" class="close">X</button>
+                        <h4 class="modal-title">Edit Account</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="addFin" name="addFin">
+                            <div class="form-group">
+                                <label for="finEditName">Name</label>
+                                <input type="text" placeholder="Name" id="finEditName" class="form-control" ng-model="finName">
+                            </div>
+                            <div class="form-group">
+                                <label for="finEditMoney">Money</label>
+                                <input type="text" placeholder="Money" id="finEditMoney" class="form-control" ng-model="finMoney">
+                            </div>
+                            <div class="form-group">
+                                <label>Account</label><br/>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finEditAcc" value="Debit" ng-model="finAcc">Debit
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finEditAcc" value="Credit" ng-model="finAcc">Credit
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>Type</label><br/>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finEditType" value="Daily" ng-model="finType">Daily
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finEditType" value="Weekly" ng-model="finType">Weekly
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="finEditType" value="Monthly" ng-model="finType">Monthly
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="finEditDate">Date</label>
+                                <input type="type" placeholder="Date" id="finEditDate" class="form-control" ng-model="finDate">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" ng-click="finEdit()" class="btn btn-success" value="Done" id="submit">
+                        <button data-dismiss="modal" class="btn btn-danger closeModel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="finDeleteModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h4>Are you Sure to DELETE</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" ng-click="finDelete()" class="btn btn-success" value="Done" id="submit">
+                        <button data-dismiss="modal" class="btn btn-danger closeModel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/jquery.min.js"></script>
+<script src="js/angular.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script>
+    var finApp = angular.module('finApp', []);
+    finApp.controller('finCtrl', function($scope, $http) {
+
+        $scope.finAcc = "Debit";
+        $scope.finType = "Daily";
+        $scope.totalVal = 0;
+        $scope.finSearch = {};
+        $scope.totalValFunc = function(index, money){
+            if( index == 0 ){ $scope.totalVal = parseInt(money);  }
+            else{ $scope.totalVal += parseInt(money);  }
+        };
+
+        $scope.financeView = function(){
+            $http({
+                method: 'GET',
+//                url: './php/view.php',
+                url: 'http://localhost:8888/getter',
+                data: { test: 'test' }
+            }).then(function(response) {
+                        $scope.finance = response.data;
+                        $scope.resetSearch();
+                        $(".closeModel").trigger("click");
+                        console.log(response);
+                    }, function(response) {
+                        console.log(response);
+                    });
+        };
+        $scope.financeView();
+
+        $scope.financeAdd = function(){
+            $http({
+                method: 'POST',
+//                url: './php/add.php',
+                url: 'http://localhost:8888/setter',
+                data: {
+                    name : $scope.finName,
+                    money : $scope.finMoney,
+                    acc : $scope.finAcc,
+                    type : $scope.finType,
+                    date : $scope.finDate
+                }
+//                dataType: 'json'
+            }).then(function(response) {
+                        console.log(response);
+                        $scope.finName = '';
+                        $scope.finMoney = '';
+                        $scope.finAcc = '';
+                        $scope.finType = '';
+                        $scope.finDate = '';
+                        $scope.financeView();
+                    }, function(response) {
+                        console.log(response);
+                    });
+        };
+
+        $scope.resetSearch = function(){
+            $scope.finSearch.name = '';
+            $scope.finSearch.money = '';
+            $scope.finSearch.account = '';
+            $scope.finSearch.type = '';
+        };
+        $scope.resetInputs = function(){
+            $scope.finName = '';
+            $scope.finMoney = '';
+            $scope.finAcc = "Debit";
+            $scope.finType = "Daily";
+            $scope.finDate = '';
+        };
+
+        $scope.finEditInvoke = function(elemId){
+            $scope.id = elemId;
+            var thisObj = $scope.finance.filter(function(elem){
+                return  elem._id == $scope.id;
+            })[0];
+            $scope.finName = thisObj.name;
+            $scope.finMoney = thisObj.money;
+            $scope.finAcc = thisObj.account;
+            $scope.finType = thisObj.type;
+            $scope.finDate = thisObj.date;
+        };
+        $scope.finEdit = function(){
+            $http({
+                method: 'POST',
+//                url: './php/newEdit.php',
+                url: 'http://localhost:8888/editor',
+                data: {
+                    id : $scope.id,
+                    name : $scope.finName,
+                    money : $scope.finMoney,
+                    acc : $scope.finAcc,
+                    type : $scope.finType,
+                    date : $scope.finDate
+                },
+                dataType: 'json'
+            }).then(function(response) {
+                        console.log(response);
+                        $scope.financeView();
+                    }, function(response) {
+                        console.log(response);
+                    });
+        };
+
+        $scope.finDeleteInvoke = function(elemId){
+            $scope.id = elemId;
+        };
+        $scope.finDelete = function(){
+            console.log($scope.id);
+            $http({
+                method: 'POST',
+//                url: './php/newDelete.php',
+                url: 'http://localhost:8888/deleter',
+                data: {
+                    id : $scope.id
+                }
+//                dataType: 'json'
+            }).then(function(response) {
+                        console.log(response);
+                        $scope.financeView();
+                    }, function(response) {
+                        console.log(response);
+                    });
+        };
+    });
+</script>
+</body>
+</html>
